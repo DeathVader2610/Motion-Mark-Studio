@@ -1,5 +1,6 @@
 import { defaultFounders } from "./founders";
 import { randomUUID } from "node:crypto";
+import { databaseConfig } from "./db-config";
 import { Pool } from "pg";
 import { officialContact } from "./contact";
 import { services, slugify } from "./seed";
@@ -8,12 +9,7 @@ const globals = globalThis as typeof globalThis & { motionPool?: Pool };
 export function database(): Db {
   if (!process.env.DATABASE_URL)
     throw new Error("Supabase database is not configured.");
-  const pool = (globals.motionPool ??= new Pool({
-    connectionString: process.env.DATABASE_URL,
-    max: 1,
-    connectionTimeoutMillis: 10000,
-    idleTimeoutMillis: 20000,
-  }));
+  const pool = (globals.motionPool ??= new Pool(databaseConfig(process.env)));
   return {
     query: async <T>(sql: string, values?: unknown[]) => ({
       rows: (await pool.query(sql, values)).rows as T[],
@@ -51,6 +47,32 @@ export async function seed(db: Db) {
   for (const founder of defaultFounders)
     await db.query(
       "INSERT INTO content(id,kind,slug,title,status,data) VALUES($1,$2,$3,$4,$5,$6) ON CONFLICT DO NOTHING",
-      [founder.id, founder.kind, founder.slug, founder.title, founder.status, JSON.stringify(founder.data)],
+      [
+        founder.id,
+        founder.kind,
+        founder.slug,
+        founder.title,
+        founder.status,
+        JSON.stringify(founder.data),
+      ],
     );
+}
+
+/** Keep related access-control changes on one connection and commit atomically. */
+export async function transaction<T>(
+  work: (client: import("pg").PoolClient) => Promise<T>,
+): Promise<T> {
+  database();
+  const client = await globals.motionPool!.connect();
+  try {
+    await client.query("BEGIN");
+    const result = await work(client);
+    await client.query("COMMIT");
+    return result;
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
 }

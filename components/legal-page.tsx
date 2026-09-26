@@ -39,8 +39,7 @@ export async function LegalPage({ kind }: { kind: "privacy" | "terms" }) {
             <h2>Storage and preferences</h2>
             <p>
               Your theme preference is stored in your browser. Administrator
-              sessions use essential cookies. No analytics or advertising
-              cookies are enabled in this build.
+              sessions use essential cookies. Optional anonymous visitor statistics are described below. No advertising cookies are used.
             </p>
             <h2>Your information</h2>
             <p>

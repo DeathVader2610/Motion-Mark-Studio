@@ -83,7 +83,7 @@ Instagram API fetching has been removed. All videos, client biographies, profile
 
 Both themes follow the supplied monochrome brand direction, with warm neutrals, restrained motion, responsive layouts, semantic navigation and reduced-motion support. The logo in `public/mark.svg` is a hand-traced **vector interpretation** of the chat image, not the original uploaded bitmap. Replace this file with the approved original vector artwork for pixel-exact brand fidelity. No client logos, project imagery, testimonials, performance numbers, founder names or biographies were invented. Portfolio empty states are intentional. Founder biographies, individual experience highlights and original portraits were supplied by the studio. Run `npm run db:migrate` after configuring Supabase to seed both approved profiles without overwriting existing entries. Admin → founders edits names, roles, biographies, highlights, display order, portrait URL/alt text/crop and Instagram links. Blank Instagram URLs hide the profile buttons. Original portraits live in `public/founders/`.
 
-Legal pages are editable drafts explicitly marked for professional review. No analytics or advertising cookies are enabled. Theme preference uses local storage and admin auth uses essential cookies. If analytics are later added, integrate consent before loading nonessential scripts.
+Legal pages are editable drafts explicitly marked for professional review. Anonymous visitor statistics require opt-in consent; no advertising cookies are used. Theme and analytics preferences use local storage, the opted-in visit identifier uses session storage, and admin authentication uses essential cookies.
 
 ## Deploy to Vercel
 
@@ -115,3 +115,11 @@ npm run build
 - `app/api/enquiries/route.ts`: validation, spam checks, persistence and notifications.
 - `lib/email.ts`: server-only Resend delivery with stored recipient snapshots.
 - `migrations/001_initial.sql`: Supabase schema, RLS and media bucket.
+
+## Team workspace
+
+The new `/admin` workspace provides five department panels, custom roles, employee suspension, join requests, private invitations, department task boards, announcements, Drive folder links and founder-only visitor statistics. See [docs/team-dashboard.md](docs/team-dashboard.md) for Google sign-in, Google Drive sharing, permission boundaries and setup.
+
+The root Drive folder is visible only to Founder Office. Department subfolder links must be configured in Drive library; Google sharing permissions remain separate. Public team applications use `/join`. Approval generates a one-time link for the founder to share privately; it does not automatically send email.
+
+Set `ANALYTICS_SALT` for opt-in anonymous visitor measurement. Google sign-in remains hidden until `GOOGLE_LOGIN_ENABLED=true` and the Supabase Google provider is configured. Production database connections verify TLS; configure `DATABASE_SSL_CA` with the downloaded Supabase root certificate if required. Never use `rejectUnauthorized: false` to bypass certificate checks.

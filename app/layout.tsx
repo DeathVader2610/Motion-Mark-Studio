@@ -1,3 +1,4 @@
+import { PublicChrome, VisitConsent } from "@/components/site-chrome";
 import { siteOrigin } from "@/lib/site-url";
 import type { Metadata } from "next";
 import { Navigation } from "@/components/navigation";
@@ -50,9 +51,14 @@ export default async function RootLayout({
         <a className="skip-link" href="#main">
           Skip to content
         </a>
-        <Navigation />
+        <PublicChrome>
+          <Navigation />
+        </PublicChrome>
         <main id="main">{children}</main>
-        <Footer />
+        <PublicChrome>
+          <Footer />
+        </PublicChrome>
+        <VisitConsent />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

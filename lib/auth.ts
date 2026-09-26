@@ -1,5 +1,6 @@
 import { createHash, randomUUID } from "node:crypto";
 import { supabaseConfigured, supabaseServer } from "./supabase";
+import { isFounder, can, type Permission, type Member } from "./workspace";
 import { query } from "./db";
 export const hashToken = (token: string) =>
   createHash("sha256").update(token).digest("hex");
@@ -11,17 +12,15 @@ export async function getAdmin() {
     error,
   } = await client.auth.getUser();
   if (error || !user) return null;
-  const [admin] = await query<{
-    id: string;
-    email: string;
-    role: "owner" | "editor";
-  }>("SELECT id,email,role FROM admins WHERE id=$1", [user.id]);
+  const [admin] = await query<Member>(
+    `SELECT a.*,COALESCE(r.name,'Unassigned') AS role_name,COALESCE(r.department_id,'') AS department_id,COALESCE(r.permissions,'{}') AS permissions FROM admins a LEFT JOIN team_roles r ON r.id=a.role_id WHERE a.id=$1 AND a.active=true`,
+    [user.id],
+  );
   return admin || null;
 }
 export async function requireAdmin(owner = false) {
   const admin = await getAdmin();
-  if (!admin || (owner && admin.role !== "owner"))
-    throw new Error("Unauthorised");
+  if (!admin || (owner && !isFounder(admin))) throw new Error("Unauthorised");
   return admin;
 }
 export async function audit(actor: string, action: string, target: string) {
@@ -43,4 +42,10 @@ export function sameOrigin(request: Request) {
     origin === new URL(request.url).origin ||
     (!!process.env.SITE_URL && origin === new URL(process.env.SITE_URL).origin)
   );
+}
+
+export async function requirePermission(permission: Permission) {
+  const admin = await requireAdmin();
+  if (!can(admin, permission)) throw new Error("Unauthorised");
+  return admin;
 }

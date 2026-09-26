@@ -9,3 +9,6 @@ artifacts/
 
 .vercel/
 *.log
+
+# Supabase CLI cache
+supabase/.temp/

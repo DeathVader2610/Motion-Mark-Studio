@@ -1,9 +1,11 @@
+import { can } from "@/lib/workspace";
 import { randomUUID } from "node:crypto";
 import { getAdmin, sameOrigin } from "@/lib/auth";
 import { boundedForm, validateBrief } from "@/lib/uploads";
 import { supabaseStorage } from "@/lib/supabase";
 export async function POST(request: Request) {
-  if (!sameOrigin(request) || !(await getAdmin()))
+  const admin = await getAdmin();
+  if (!sameOrigin(request) || !admin || !can(admin, "media.upload"))
     return Response.json({ error: "Unauthorised" }, { status: 403 });
   try {
     const form = await boundedForm(request);

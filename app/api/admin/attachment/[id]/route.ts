@@ -1,10 +1,13 @@
+import { can } from "@/lib/workspace";
 import { getAdmin } from "@/lib/auth";
 import { query } from "@/lib/db";
 export async function GET(
   _: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  if (!(await getAdmin())) return new Response("Unauthorised", { status: 403 });
+  const admin = await getAdmin();
+  if (!admin || !can(admin, "enquiries.read"))
+    return new Response("Unauthorised", { status: 403 });
   const { id } = await params;
   if (!/^[a-f0-9-]{36}$/.test(id))
     return new Response("Not found", { status: 404 });

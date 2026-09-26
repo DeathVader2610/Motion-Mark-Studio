@@ -80,6 +80,7 @@ export async function Footer() {
               ["Films & reels", "/videos"],
               ["Instagram", "/instagram"],
               ["Start a project", "/contact"],
+              ["Join the team", "/join"],
             ].map(([label, url]) => (
               <Link key={url} href={url}>
                 {label}

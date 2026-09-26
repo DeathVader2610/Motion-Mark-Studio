@@ -4,7 +4,13 @@ import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { query } from "@/lib/db";
-import { audit, requireAdmin, hashToken, rateLimit } from "@/lib/auth";
+import {
+  audit,
+  requireAdmin,
+  requirePermission,
+  hashToken,
+  rateLimit,
+} from "@/lib/auth";
 import { contactSchema } from "@/lib/contact";
 import { contentSchema } from "@/lib/schema";
 import { deliverEnquiry } from "@/lib/email";
@@ -31,9 +37,10 @@ export async function login(_: Result, form: FormData): Promise<Result> {
     password,
   });
   if (error || !data.user) return { error: "Invalid email or password." };
-  const [admin] = await query("SELECT id FROM admins WHERE id=$1", [
-    data.user.id,
-  ]);
+  const [admin] = await query(
+    "SELECT id FROM admins WHERE id=$1 AND active=true",
+    [data.user.id],
+  );
   if (!admin) {
     await client.auth.signOut();
     return { error: "This account does not have studio access." };
@@ -61,7 +68,7 @@ export async function saveContact(_: Result, form: FormData): Promise<Result> {
   };
 }
 export async function saveContent(_: Result, form: FormData): Promise<Result> {
-  const admin = await requireAdmin();
+  const admin = await requirePermission("content.edit");
   const data = Object.fromEntries(
     [
       "description",
@@ -91,7 +98,10 @@ export async function saveContent(_: Result, form: FormData): Promise<Result> {
     status: form.get("status"),
     data: {
       ...data,
-      highlights: String(form.get("highlights") || "").split("\n").map(s => s.trim()).filter(Boolean),
+      highlights: String(form.get("highlights") || "")
+        .split("\n")
+        .map((s) => s.trim())
+        .filter(Boolean),
       sortOrder: Number(form.get("sortOrder") || 100),
       portraitPosition: form.get("portraitPosition") || "top",
       featured: form.get("featured") === "on",
@@ -131,7 +141,8 @@ export async function saveContent(_: Result, form: FormData): Promise<Result> {
   return { success: "Content saved." };
 }
 export async function updateEnquiry(form: FormData) {
-  const admin = await requireAdmin();
+  const admin = await requirePermission("enquiries.manage");
+  await requirePermission("enquiries.read");
   const id = String(form.get("id"));
   const status = String(form.get("status"));
   if (!["new", "contacted", "in-progress", "closed"].includes(status))

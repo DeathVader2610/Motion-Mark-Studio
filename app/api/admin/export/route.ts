@@ -1,9 +1,10 @@
+import { isFounder } from "@/lib/workspace";
 import { getAdmin } from "@/lib/auth";
 import { query } from "@/lib/db";
 import { csvCell } from "@/lib/schema";
 export async function GET() {
   const admin = await getAdmin();
-  if (!admin || admin.role !== "owner")
+  if (!admin || !isFounder(admin))
     return new Response("Unauthorised", { status: 403 });
   const rows = await query<{
     id: string;
