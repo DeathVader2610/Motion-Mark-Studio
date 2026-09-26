@@ -7,7 +7,9 @@ const links = [
   ["Work", "/work"],
   ["Services", "/services"],
   ["About", "/about"],
+  ["Founders", "/founders"],
   ["Contact", "/contact"],
+  ["Studio Login", "/admin/login"],
 ];
 function readTheme() {
   try {
