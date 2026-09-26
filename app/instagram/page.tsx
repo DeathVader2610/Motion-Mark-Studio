@@ -26,16 +26,8 @@ export default async function InstagramPage() {
         ) : (
           <div className="empty-state">
             <Instagram size={40} />
-            <h2>
-              {feed.status === "unavailable"
-                ? "The feed is taking a pause."
-                : "The next frame is on Instagram."}
-            </h2>
-            <p>
-              {feed.status === "unavailable"
-                ? "We couldn’t refresh the feed right now. You can still visit our profile."
-                : "Visit our profile for current posts while we prepare selected stories for the site."}
-            </p>
+            <h2>The next frame is on Instagram.</h2>
+            <p>Visit our profile for current posts while we prepare selected stories for the site.</p>
           </div>
         )}
         <a

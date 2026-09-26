@@ -27,7 +27,7 @@
 8. Simulate provider failure and verify enquiry remains saved/pending, then retry the failed emails from Admin. Check the intended recipient snapshot is retained after a later contact-setting change.
 9. Test rejected consent, malformed fields, unsafe file types, invalid/expired Turnstile, bad origin and rate-limit responses. Confirm the Turnstile widget resets after a failed attempt.
 10. Update enquiry status, download its brief and export CSV; verify spreadsheet formula escaping.
-11. Connect an approved Instagram account. Verify only selected media IDs appear, API expiry falls back gracefully and manual entries work.
+11. Publish and archive a manual Instagram entry. Verify the homepage and Instagram page reflect its status without any Instagram API connection. Verify client profiles and hosted videos use supplied content.
 12. Set the final SITE_URL, review metadata/sitemap/Open Graph, replace logo with approved original artwork, add actual content and arrange legal review. Test production HTTPS, image optimisation and Lighthouse. No numerical performance/accessibility score is claimed without measurement.
 
 No live Supabase permissions, external email delivery or Meta integration can be certified until their credentials are configured.

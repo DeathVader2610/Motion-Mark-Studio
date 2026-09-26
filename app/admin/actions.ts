@@ -182,23 +182,3 @@ export async function changePassword(
   await client.auth.signOut({ scope: "global" });
   redirect("/admin/login");
 }
-export async function approveInstagram(
-  _: Result,
-  form: FormData,
-): Promise<Result> {
-  const admin = await requireAdmin(true);
-  const ids = String(form.get("ids") || "")
-    .split(/[\s,]+/)
-    .filter(Boolean);
-  if (ids.length > 100 || ids.some((id) => !/^\d+$/.test(id)))
-    return {
-      error: "Enter up to 100 Instagram media IDs, separated by commas.",
-    };
-  await query(
-    "INSERT INTO settings(key,value) VALUES($1,$2) ON CONFLICT(key) DO UPDATE SET value=EXCLUDED.value,updated_at=now()",
-    ["instagram-approved", JSON.stringify(ids)],
-  );
-  await audit(admin.email, "updated Instagram approvals", "instagram-approved");
-  revalidatePath("/instagram");
-  return { success: "Instagram approvals saved." };
-}

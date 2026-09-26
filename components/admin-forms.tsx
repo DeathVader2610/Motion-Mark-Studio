@@ -5,7 +5,6 @@ import {
   saveContent,
   login,
   retryEmail,
-  approveInstagram,
   changePassword,
   type Result,
 } from "@/app/admin/actions";
@@ -290,6 +289,8 @@ export function ContentEditor({
           </label>
         )}
       </div>
+      {(kind === "video" || kind === "project") && <p>Use a hosted MP4 or WebM for website playback. Original MOV files should be converted before publishing. Add the client name and link the matching portfolio project.</p>}
+      {(kind === "client" || kind === "collaborator") && <p>Add the supplied client name, biography, profile picture URL and full Instagram profile URL. These details are managed here manually.</p>}
       <Feedback state={state} />
       <button className="button" disabled={pending}>
         {pending ? "Saving…" : "Save content ↗"}
@@ -305,21 +306,6 @@ export function RetryEmail({ id }: { id: string }) {
       <Feedback state={state} />
       <button disabled={pending} className="button small secondary">
         {pending ? "Sending…" : "Retry pending emails"}
-      </button>
-    </form>
-  );
-}
-export function InstagramApproval({ ids }: { ids: string[] }) {
-  const [state, action, pending] = useActionState(approveInstagram, {});
-  return (
-    <form action={action} className="admin-panel">
-      <label>
-        Approved media IDs (comma-separated)
-        <textarea name="ids" defaultValue={ids.join(", ")} rows={4} />
-      </label>
-      <Feedback state={state} />
-      <button className="button" disabled={pending}>
-        Save approved posts
       </button>
     </form>
   );

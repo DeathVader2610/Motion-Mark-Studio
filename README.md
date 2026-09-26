@@ -35,7 +35,7 @@ Open http://localhost:3000. With no credentials, public pages show official cont
 
 6. Set the Supabase Auth Site URL and allowed redirect URLs to your deployment domain. No public signup route is exposed.
 
-Database access is server-side via Supabase’s PostgreSQL pooler. RLS is enabled on every application table, and `anon`/`authenticated` privileges are revoked. No table contents are exposed through the browser SDK. The database server connection uses the owner role; every admin action performs a verified Supabase Auth `getUser()` check plus a database-backed role check. Contact settings, notification retries, CSV export and Instagram approval require the owner role. Editors can maintain content and review enquiries. Revoking a user’s `admins` row immediately revokes application access.
+Database access is server-side via Supabase’s PostgreSQL pooler. RLS is enabled on every application table, and `anon`/`authenticated` privileges are revoked. No table contents are exposed through the browser SDK. The database server connection uses the owner role; every admin action performs a verified Supabase Auth `getUser()` check plus a database-backed role check. Contact settings, notification retries, and CSV export require the owner role. Editors can maintain content and review enquiries. Revoking a user’s `admins` row immediately revokes application access.
 
 Supabase Storage’s `portfolio` bucket is public for intentionally published images. Uploads use server-side authorisation, MIME/signature checks and a 3 MB limit. Client enquiry attachments are stored privately in PostgreSQL and downloaded only through authenticated routes, never in the public bucket.
 
@@ -77,7 +77,7 @@ Feature projects on the homepage with the checkbox. Use matching service/categor
 
 ## Instagram
 
-The optional integration uses the official Instagram API with Instagram Login, never scraping. See `docs/instagram.md` for account permissions, token configuration, explicit media approval, caching and manual fallback. No claim is made that every collaborative post is exposed by the API.
+Instagram API fetching has been removed. All videos, client biographies, profile pictures and Instagram links are supplied by the studio and published through the content library. Instagram entries remain optional manually curated links. See `docs/instagram.md` for the media handoff workflow.
 
 ## Design and content status
 

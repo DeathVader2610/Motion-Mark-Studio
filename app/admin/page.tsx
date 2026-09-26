@@ -8,10 +8,8 @@ import {
   ContactSettings,
   ContentEditor,
   RetryEmail,
-  InstagramApproval,
   PasswordForm,
 } from "@/components/admin-forms";
-import { getInstagramCandidates } from "@/lib/instagram";
 import { logout, updateEnquiry } from "./actions";
 import { MediaUpload } from "@/components/media-upload";
 export const metadata = {
@@ -49,7 +47,6 @@ export default async function Admin({
           ["contact", "Contact settings"],
           ["content", "Content library"],
           ["enquiries", "Enquiries"],
-          ["instagram", "Instagram connection"],
           ["account", "Account"],
         ].map(([key, label]) => (
           <Link
@@ -90,7 +87,6 @@ export default async function Admin({
         </>
       )}
       {tab === "enquiries" && <Enquiries owner={admin.role === "owner"} />}
-      {tab === "instagram" && <InstagramPanel owner={admin.role === "owner"} />}
       {tab === "account" && <PasswordForm />}
     </section>
   );
@@ -199,37 +195,6 @@ async function Enquiries({ owner }: { owner: boolean }) {
           )}
         </details>
       ))}
-    </div>
-  );
-}
-async function InstagramPanel({ owner }: { owner: boolean }) {
-  const feed = await getInstagramCandidates();
-  const [settings] = await query<{ value: string[] }>(
-    "SELECT value FROM settings WHERE key=$1",
-    ["instagram-approved"],
-  );
-  return (
-    <div className="admin-panel">
-      <h2>Approved Instagram stories</h2>
-      <p>
-        Connection status: {feed.status}. Only account media explicitly approved
-        below is shown on the site. The API may not expose every collaboration.
-        Add missing approved posts in the Instagram content library.
-      </p>
-      {feed.posts.map((p) => (
-        <p key={p.id}>
-          <strong>{p.id}</strong> ·{" "}
-          {p.caption?.slice(0, 120) || "Instagram media"} ·{" "}
-          <a href={p.permalink} target="_blank" rel="noopener noreferrer">
-            View ↗
-          </a>
-        </p>
-      ))}
-      {owner ? (
-        <InstagramApproval ids={settings?.value || []} />
-      ) : (
-        <p>The owner manages feed approvals.</p>
-      )}
     </div>
   );
 }

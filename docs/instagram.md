@@ -1,12 +1,19 @@
-# Instagram connection
+# Manual videos and client profiles
 
-1. Connect a professional Instagram account to a Meta developer app supporting **Instagram API with Instagram Login**. Obtain the permissions needed to read that account’s media (currently `instagram_business_basic` for this integration). Complete Meta approval requirements for your intended account/app mode. Verify the requirements in Meta’s current documentation before rollout.
-2. Store a permitted account access token in `INSTAGRAM_ACCESS_TOKEN` and its numeric account ID in `INSTAGRAM_USER_ID`. Keep both server-side. Set a supported `INSTAGRAM_API_VERSION` (the supplied default is `v23.0`; confirm availability for your app).
-3. The server fetches `/{account-id}/media` on `graph.instagram.com`, requesting id, caption, media type, media/thumbnail URL, permalink and timestamp. It reads up to the 24 latest accessible items, caches responses for 15 minutes and applies a 10-second request timeout.
-4. Under **Admin → Instagram connection**, inspect fetched media IDs and save the IDs approved for the website. Only approved items appear publicly. A newly fetched item is never automatically published without approval.
-5. Add collaboration names, dates, captions, thumbnails and permalinks manually using the Instagram content library if needed. Manual entries take precedence over matching API permalinks.
-6. Meta’s API does not promise access to every coauthored post or a complete collaborator list. This implementation displays only fields actually returned and user-approved manual information.
-7. A missing token uses the manual feed. Expired/invalid tokens or API errors fall back to published manual entries and an appropriate public empty/error state. Tokens and provider errors are never sent to the browser.
-8. Token renewal is an operator task; automatic OAuth onboarding or scheduled renewal is not implemented. Rotate the environment token, redeploy/restart and allow the cache to expire. Monitor connection status in Admin.
+Instagram API fetching, connection settings, media-ID approval and token configuration have been removed. The site makes no Instagram API requests. Public profile links remain available.
 
-The studio’s Instagram CTA always uses the clean profile URL derived from the central contact record.
+## Supply content
+
+Place original MOV files in `artifacts/content-inbox/videos/`, client portraits/logos in `artifacts/content-inbox/clients/`, and fill in `artifacts/content-inbox/clients.csv`. This inbox is excluded from Git and deployment. Use one row per video/client association.
+
+MOV is an input/master format. Convert each supplied movie to a browser-compatible H.264/AAC MP4 (with fast-start metadata), prepare a poster image and captions as appropriate, and verify playback before publishing. Do not merely rename `.mov` to `.mp4`.
+
+## Publish
+
+- Host the optimized MP4/WebM on a video-capable host, then enter its HTTPS URL under Admin → Content library → video. The current admin uploader accepts images only, not video files.
+- Add the title, description, category, poster image and related portfolio project slug. Mark featured to use as the main showreel.
+- Create a project entry for its client and production details, linking the video URL.
+- Under client/collaborator, enter the supplied name, biography, portrait/logo URL and full Instagram profile URL. Upload images through the admin image uploader.
+- Optional instagram entries are manually entered thumbnails and links. Publishing or archiving controls visibility.
+
+No Meta developer app, Instagram access token or client Instagram login is needed.
