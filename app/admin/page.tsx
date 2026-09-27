@@ -2,6 +2,8 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import {
   Aperture,
+  Receipt,
+  Contact,
   LayoutDashboard,
   Users,
   ShieldCheck,
@@ -48,6 +50,11 @@ import {
 } from "@/components/dashboard/team-panels";
 import { DashboardLive, DashboardTheme } from "@/components/dashboard/forms";
 import { AnalyticsPanel, Metric } from "@/components/dashboard/analytics";
+import {
+  ClientsPanel,
+  BillingPanel,
+  BillingSettings,
+} from "@/components/dashboard/billing-panels";
 export const metadata = {
   title: "Studio Workspace",
   robots: { index: false, follow: false },
@@ -67,6 +74,10 @@ export default async function Admin({
     department?: string;
     kind?: string;
     id?: string;
+    client?: string;
+    q?: string;
+    status?: string;
+    page?: string;
   }>;
 }) {
   const actor = await getAdmin();
@@ -95,6 +106,19 @@ export default async function Admin({
       name: "Drive library",
       icon: FolderOpen,
       allowed: can(actor, "drive.view"),
+    },
+    { id: "clients", name: "Clients", icon: Contact, allowed: founder },
+    {
+      id: "billing",
+      name: "Billing & invoices",
+      icon: Receipt,
+      allowed: founder,
+    },
+    {
+      id: "billing-settings",
+      name: "Invoice settings",
+      icon: Settings,
+      allowed: founder,
     },
     { id: "people", name: "Employees", icon: Users, allowed: founder },
     { id: "requests", name: "Join requests", icon: Bell, allowed: founder },
@@ -295,6 +319,19 @@ export default async function Admin({
           {tab === "tasks" && (
             <TasksPanel actor={actor} department={department} />
           )}
+          {tab === "clients" && founder && (
+            <ClientsPanel id={search.id} search={search.q} page={search.page} />
+          )}
+          {tab === "billing" && founder && (
+            <BillingPanel
+              id={search.id}
+              clientId={search.client}
+              search={search.q}
+              status={search.status}
+              page={search.page}
+            />
+          )}
+          {tab === "billing-settings" && founder && <BillingSettings />}
           {tab === "people" && founder && <PeoplePanel actor={actor} />}
           {tab === "roles" && founder && <RolesPanel />}
           {tab === "requests" && founder && <RequestsPanel />}

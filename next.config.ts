@@ -1,5 +1,9 @@
 import type { NextConfig } from "next";
 const config: NextConfig = {
+  outputFileTracingIncludes: {
+    "/admin": ["./public/fonts/NotoSans.ttf"],
+    "/api/admin/invoices/*/pdf": ["./public/fonts/NotoSans.ttf"],
+  },
   serverExternalPackages: ["pg"],
   images: { remotePatterns: [{ protocol: "https", hostname: "**" }] },
   async headers() {
